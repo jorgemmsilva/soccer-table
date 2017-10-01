@@ -1,9 +1,6 @@
-# React Hot Loader Minimal Boilerplate
+# Soccer Table
 
-Bare minimum needed to have [React Hot Loader](https://github.com/gaearon/react-hot-loader) working with [webpack-dev-server](https://github.com/webpack/webpack-dev-server) and [Babel latest](https://babeljs.io/docs/plugins/preset-latest/) plugin
-
-## Docs
-See the [Migration to 3.0 guide](https://github.com/gaearon/react-hot-loader/tree/master/docs#migration-to-30) on React Hot Loader repo.
+Implementation of a data table for checking soccer standings using React (material-ui) and Redux. Data is fetched from sportmonks API.
 
 ## Try it out
 ```
