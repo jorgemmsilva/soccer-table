@@ -1,0 +1,28 @@
+{
+  "name": "soccer-table",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "webpack-dev-server --hot --history-api-fallback --open"
+  },
+  "dependencies": {
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "material-ui": "^0.19.2",
+    "material-ui-datatables": "^0.18.2",
+    "react": "^16.0.0",
+    "react-dom": "^16.0.0",
+    "react-tap-event-plugin": "^3.0.2",
+    "save": "^2.3.1"
+  },
+  "devDependencies": {
+    "babel-core": "^6.23.1",
+    "babel-loader": "^6.3.2",
+    "babel-polyfill": "^6.23.0",
+    "babel-preset-env": "^1.6.0",
+    "babel-preset-react": "^6.23.0",
+    "react-hot-loader": "^3.0.0-beta.6",
+    "webpack": "^2.2.1",
+    "webpack-dev-server": "^2.4.1"
+  }
+}
