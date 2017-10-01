@@ -27,6 +27,16 @@ import { bindActionCreators } from 'redux'
 import * as seasonsActions from "../store/actions/seasonsActions"
 
 
+
+
+//----------------------------------------------------------------------
+//
+//
+//                            DATA DEFINITION
+//
+//
+//----------------------------------------------------------------------
+
 let counter = 0;
 function createData(name, calories, fat, carbs, protein) {
   counter += 1;
@@ -34,12 +44,26 @@ function createData(name, calories, fat, carbs, protein) {
 }
 
 const columnData = [
-  { id: 'name', numeric: false, disablePadding: true, label: 'Dessert (100g serving)' },
-  { id: 'calories', numeric: true, disablePadding: false, label: 'Calories' },
-  { id: 'fat', numeric: true, disablePadding: false, label: 'Fat (g)' },
-  { id: 'carbs', numeric: true, disablePadding: false, label: 'Carbs (g)' },
-  { id: 'protein', numeric: true, disablePadding: false, label: 'Protein (g)' },
+  { id: 'position', numeric: true, disablePadding: false, label: 'Position' },
+  { id: 'team_name', numeric: false, disablePadding: false, label: 'Team Name' },
+  { id: 'overall.games_played', numeric: true, disablePadding: false, label: 'Played' },
+  { id: 'overall.won', numeric: true, disablePadding: false, label: 'Won' },
+  { id: 'overall.draw', numeric: true, disablePadding: false, label: 'Drawn' },
+  { id: 'overall.lost', numeric: true, disablePadding: false, label: 'Lost' },
+  { id: 'overall.goals_scored', numeric: true, disablePadding: false, label: 'Goals' },
+  { id: 'total.goal_difference', numeric: true, disablePadding: false, label: 'Difference' },
+  { id: 'total.points', numeric: true, disablePadding: false, label: 'Points' },
 ];
+
+
+
+//----------------------------------------------------------------------
+//
+//
+//                            TABLE HEAD
+//
+//
+//----------------------------------------------------------------------
 
 class EnhancedTableHead extends React.Component {
   static propTypes = {
@@ -62,13 +86,13 @@ class EnhancedTableHead extends React.Component {
     return (
       <TableHead>
         <TableRow>
-          <TableCell padding="checkbox">
+          {/* <TableCell padding="checkbox">
             <Checkbox
               indeterminate={numSelected > 0 && numSelected < rowCount}
               checked={numSelected === rowCount}
               onChange={onSelectAllClick}
             />
-          </TableCell>
+          </TableCell> */}
           {columnData.map(column => {
             return (
               <TableCell
@@ -162,6 +186,19 @@ EnhancedTableToolbar.propTypes = {
 
 EnhancedTableToolbar = withStyles(toolbarStyles)(EnhancedTableToolbar);
 
+
+
+
+//----------------------------------------------------------------------
+//
+//
+//                    DATA TABLE
+//
+//
+//----------------------------------------------------------------------
+
+
+
 const styles = theme => ({
   root: {
     width: '100%',
@@ -172,23 +209,13 @@ const styles = theme => ({
   },
 });
 
-
-//----------------------------------------------------------------------
-//
-//
-//                    DATA TABLE STARTS HERE
-//
-//
-//----------------------------------------------------------------------
-
-
-
-
 @connect((store) => {
   return {
       seasonId: store.seasons.seasonId,
       fetchingData: store.seasons.fetching,
       season: store.seasons.season,
+      phase: store.seasons.phase,
+      data: store.seasons.data,
       error: store.seasons.error,
   }
 }, (dispatch) => {
@@ -201,24 +228,24 @@ class EnhancedTable extends React.Component {
     super(props);
     this.state = {
       order: 'asc',
-      orderBy: 'calories',
+      orderBy: 'position',
       selected: [],
-      // data: this.props.season.standings.data.sort((a, b) => (a.postition < b.postition ? -1 : 1)),
-      data: [
-        createData('Cupcake', 305, 3.7, 67, 4.3),
-        createData('Donut', 452, 25.0, 51, 4.9),
-        createData('Eclair', 262, 16.0, 24, 6.0),
-        createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-        createData('Gingerbread', 356, 16.0, 49, 3.9),
-        createData('Honeycomb', 408, 3.2, 87, 6.5),
-        createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-        createData('Jelly Bean', 375, 0.0, 94, 0.0),
-        createData('KitKat', 518, 26.0, 65, 7.0),
-        createData('Lollipop', 392, 0.2, 98, 0.0),
-        createData('Marshmallow', 318, 0, 81, 2.0),
-        createData('Nougat', 360, 19.0, 9, 37.0),
-        createData('Oreo', 437, 18.0, 63, 4.0),
-      ].sort((a, b) => (a.calories < b.calories ? -1 : 1)),
+      // data: [],
+      // data: [
+      //   createData('Cupcake', 305, 3.7, 67, 4.3),
+      //   createData('Donut', 452, 25.0, 51, 4.9),
+      //   createData('Eclair', 262, 16.0, 24, 6.0),
+      //   createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
+      //   createData('Gingerbread', 356, 16.0, 49, 3.9),
+      //   createData('Honeycomb', 408, 3.2, 87, 6.5),
+      //   createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
+      //   createData('Jelly Bean', 375, 0.0, 94, 0.0),
+      //   createData('KitKat', 518, 26.0, 65, 7.0),
+      //   createData('Lollipop', 392, 0.2, 98, 0.0),
+      //   createData('Marshmallow', 318, 0, 81, 2.0),
+      //   createData('Nougat', 360, 19.0, 9, 37.0),
+      //   createData('Oreo', 437, 18.0, 63, 4.0),
+      // ].sort((a, b) => (a.calories < b.calories ? -1 : 1)),
       page: 0,
       rowsPerPage: 5,
     };
@@ -238,15 +265,15 @@ class EnhancedTable extends React.Component {
 
     const data =
       order === 'desc'
-        ? this.state.data.sort((a, b) => (b[orderBy] < a[orderBy] ? -1 : 1))
-        : this.state.data.sort((a, b) => (a[orderBy] < b[orderBy] ? -1 : 1));
+        ? this.props.data.sort((a, b) => (b[orderBy] < a[orderBy] ? -1 : 1))
+        : this.props.data.sort((a, b) => (a[orderBy] < b[orderBy] ? -1 : 1));
 
     this.setState({ data, order, orderBy });
   };
 
   handleSelectAllClick = (event, checked) => {
     if (checked) {
-      this.setState({ selected: this.state.data.map(n => n.id) });
+      this.setState({ selected: this.props.data.map(n => n.id) });
       return;
     }
     this.setState({ selected: [] });
@@ -259,24 +286,25 @@ class EnhancedTable extends React.Component {
   };
 
   handleClick = (event, id) => {
-    const { selected } = this.state;
-    const selectedIndex = selected.indexOf(id);
-    let newSelected = [];
+    console.log("clicked: ", id)
+    // const { selected } = this.state;
+    // const selectedIndex = selected.indexOf(id);
+    // let newSelected = [];
 
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, id);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1),
-      );
-    }
+    // if (selectedIndex === -1) {
+    //   newSelected = newSelected.concat(selected, id);
+    // } else if (selectedIndex === 0) {
+    //   newSelected = newSelected.concat(selected.slice(1));
+    // } else if (selectedIndex === selected.length - 1) {
+    //   newSelected = newSelected.concat(selected.slice(0, -1));
+    // } else if (selectedIndex > 0) {
+    //   newSelected = newSelected.concat(
+    //     selected.slice(0, selectedIndex),
+    //     selected.slice(selectedIndex + 1),
+    //   );
+    // }
 
-    this.setState({ selected: newSelected });
+    // this.setState({ selected: newSelected });
   };
 
   handleChangePage = (event, page) => {
@@ -289,18 +317,21 @@ class EnhancedTable extends React.Component {
 
   isSelected = id => this.state.selected.indexOf(id) !== -1;
 
+
+  getDataById = (obj,value) => [obj].concat(value.split('.')).reduce(function(a, b) { return a[b] })
+
   render() {
 
     if(this.props.fetchingData || (!this.props.error && !this.props.season))
     return <div>Loading...</div>
   
-    var season = this.props.season[0];
+    var season = this.props.season[this.props.phase];
 
     if(!season)
       return <div>{this.props.error}</div>
 
-    const classes = this.props.classes;
-    const { data, order, orderBy, selected, rowsPerPage, page } = this.state;
+    const { data, classes} = this.props;
+    const { order, orderBy, selected, rowsPerPage, page } = this.state;
 
     return (
       <Paper className={classes.root}>
@@ -319,7 +350,7 @@ class EnhancedTable extends React.Component {
               rowCount={data.length}
             />
             <TableBody>
-              {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(n => {
+              {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map( (n,idx) => {
                 const isSelected = this.isSelected(n.id);
                 return (
                   <TableRow
@@ -329,17 +360,22 @@ class EnhancedTable extends React.Component {
                     role="checkbox"
                     aria-checked={isSelected}
                     tabIndex={-1}
-                    key={n.id}
+                    key={idx}
                     selected={isSelected}
                   >
-                    <TableCell padding="checkbox">
+                    {/* <TableCell padding="checkbox">
                       <Checkbox checked={isSelected} />
-                    </TableCell>
-                    <TableCell padding="none">{n.name}</TableCell>
-                    <TableCell numeric>{n.calories}</TableCell>
-                    <TableCell numeric>{n.fat}</TableCell>
-                    <TableCell numeric>{n.carbs}</TableCell>
-                    <TableCell numeric>{n.protein}</TableCell>
+                    </TableCell> */}
+                    {columnData.map((x, idx)=>{
+                      return  <TableCell 
+                                key={idx} 
+                                numeric={x.numeric}
+                              >
+                                {this.getDataById(n,x.id)}
+                              </TableCell>
+                      
+                    })}
+                    
                   </TableRow>
                 );
               })}

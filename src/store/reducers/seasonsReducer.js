@@ -3,7 +3,9 @@ export default function reducer(
     fetching: false,
     seasonId: 825,
     season: null,
+    phase : 0,
     error: null,
+    data: null,
   }
   , action){
 
@@ -14,10 +16,13 @@ export default function reducer(
     }
 
     case 'FETCH_SEASONS_FULFILLED':{
+      var season = action.payload.data.data
+      var data = season[state.phase].standings.data.sort((a, b) => (a.postition < b.postition ? -1 : 1))
       return{
         ...state, 
         fetching: false, 
-        season: action.payload.data.data
+        season: season,
+        data: data,
       }
     }
 
