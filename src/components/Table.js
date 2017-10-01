@@ -1,7 +1,10 @@
 import React, {Component} from 'react'
-import {Card} from 'material-ui/Card'
-
+import { Card } from 'material-ui/Card'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
 import DataTables from 'material-ui-datatables'
+
+import * as userActions from "../store/actions/playersActions"
 
 const styles = {
   container: {
@@ -213,10 +216,25 @@ const TABLE_DATA_NEXT = [
   },
 ]
 
+@connect((store) => {
+  return {
+      players: store.players.players,
+      playersFetched: store.players.fetched
+  }
+}, (dispatch) => {
+  return {
+      actions: bindActionCreators(userActions, dispatch)
+  }
+})
 export default class Table extends Component {
   state = {
     data: TABLE_DATA,
     page: 1,
+  }
+  
+  componentWillMount(){
+    //this.props.dispatch()
+    this.props.actions.fetchPlayers()
   }
 
   handleSortOrderChange = (key, order) => {
