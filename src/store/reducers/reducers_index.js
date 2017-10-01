@@ -1,9 +1,9 @@
 import { combineReducers } from 'redux'
 
 import playersReducer from "./playersReducer"
-import teamsReducer from "./teamsReducer"
+import seasonsReducer from "./seasonsReducer"
 
 export default combineReducers({
   players: playersReducer,
-  teams: teamsReducer,
+  seasons: seasonsReducer,
 })

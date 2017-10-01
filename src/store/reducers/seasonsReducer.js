@@ -1,36 +1,34 @@
 export default function reducer(
   state = {
     fetching: false,
-    players: [],
+    seasonId: 825,
+    season: null,
     error: null,
   }
   , action){
 
   switch(action.type){
 
-    case 'FETCH_PLAYERS_PENDING':{
-      return{
-        ...state, 
-        fetching: true
-      }
+    case 'FETCH_SEASONS_PENDING':{
+      return{...state, fetching: true}
     }
 
-    case 'FETCH_PLAYERS_FULFILLED':{
+    case 'FETCH_SEASONS_FULFILLED':{
       return{
         ...state, 
         fetching: false, 
-        players: action.payload
+        season: action.payload.data.data
       }
     }
 
-    case 'FETCH_PLAYERS_REJECTED':{
+    case 'FETCH_SEASONS_REJECTED':{
       return{
         ...state, 
         fetching: false, 
         error: action.payload
       }
     }
-
+    
   }
   
   return state
