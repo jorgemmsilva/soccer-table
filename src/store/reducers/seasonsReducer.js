@@ -11,13 +11,13 @@ export default function reducer(
 
   switch(action.type){
 
-    case 'FETCH_SEASONS_PENDING':{
+    case 'FETCH_SEASON_PENDING':{
       return{...state, fetching: true}
     }
 
-    case 'FETCH_SEASONS_FULFILLED':{
+    case 'FETCH_SEASON_FULFILLED':{
       var season = action.payload.data.data
-      var data = season[state.phase].standings.data.sort((a, b) => (a.postition < b.postition ? -1 : 1))
+      var data = season[state.phase].standings.data.sort((a, b) => (a.position < b.position ? -1 : 1))
       return{
         ...state, 
         fetching: false, 
@@ -26,7 +26,7 @@ export default function reducer(
       }
     }
 
-    case 'FETCH_SEASONS_REJECTED':{
+    case 'FETCH_SEASON_REJECTED':{
       return{
         ...state, 
         fetching: false, 

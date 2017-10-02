@@ -1,8 +1,10 @@
 const webpack = require('webpack')
 const path = require('path')
 
+var debug = process.env.NODE_ENV !== "production";
+
 module.exports = {
-  devtool: 'source-map',
+  devtool: debug ? 'source-map' : false,
   entry: {
     'app': [
       'babel-polyfill',
@@ -18,5 +20,8 @@ module.exports = {
     rules: [
       { test: /\.js$/, exclude: /node_modules/, loader: 'babel-loader' }
     ]
-  }
+  },
+  plugins: debug ? [
+    new webpack.NamedModulesPlugin(),
+  ] : []
 }

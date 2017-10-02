@@ -26,6 +26,8 @@ import { bindActionCreators } from 'redux'
 
 import * as seasonsActions from "../store/actions/seasonsActions"
 
+import TeamDialog from "./TeamDialog"
+
 
 
 
@@ -80,7 +82,7 @@ class EnhancedTableHead extends React.Component {
   };
 
   render() {
-    
+
     const { onSelectAllClick, order, orderBy, numSelected, rowCount } = this.props;
 
     return (
@@ -123,15 +125,15 @@ const toolbarStyles = theme => ({
     paddingRight: 2,
   },
   highlight:
-    theme.palette.type === 'light'
-      ? {
-          color: theme.palette.secondary.A700,
-          backgroundColor: theme.palette.secondary.A100,
-        }
-      : {
-          color: theme.palette.secondary.A100,
-          backgroundColor: theme.palette.secondary.A700,
-        },
+  theme.palette.type === 'light'
+    ? {
+      color: theme.palette.secondary.A700,
+      backgroundColor: theme.palette.secondary.A100,
+    }
+    : {
+      color: theme.palette.secondary.A100,
+      backgroundColor: theme.palette.secondary.A700,
+    },
   spacer: {
     flex: '1 1 100%',
   },
@@ -156,8 +158,8 @@ let EnhancedTableToolbar = props => {
         {numSelected > 0 ? (
           <Typography type="subheading">{numSelected} selected</Typography>
         ) : (
-          <Typography type="title">{props.title}</Typography>
-        )}
+            <Typography type="title">{props.title}</Typography>
+          )}
       </div>
       <div className={classes.spacer} />
       <div className={classes.actions}>
@@ -168,12 +170,12 @@ let EnhancedTableToolbar = props => {
             </IconButton>
           </Tooltip>
         ) : (
-          <Tooltip title="Filter list">
-            <IconButton aria-label="Filter list">
-              <FilterListIcon />
-            </IconButton>
-          </Tooltip>
-        )}
+            <Tooltip title="Filter list">
+              <IconButton aria-label="Filter list">
+                <FilterListIcon />
+              </IconButton>
+            </Tooltip>
+          )}
       </div>
     </Toolbar>
   );
@@ -211,48 +213,31 @@ const styles = theme => ({
 
 @connect((store) => {
   return {
-      seasonId: store.seasons.seasonId,
-      fetchingData: store.seasons.fetching,
-      season: store.seasons.season,
-      phase: store.seasons.phase,
-      data: store.seasons.data,
-      error: store.seasons.error,
+    seasonId: store.seasons.seasonId,
+    fetchingData: store.seasons.fetching,
+    season: store.seasons.season,
+    phase: store.seasons.phase,
+    data: store.seasons.data,
+    error: store.seasons.error,
   }
 }, (dispatch) => {
   return {
-      actions: bindActionCreators(seasonsActions, dispatch)
+    seasonsActions: bindActionCreators(seasonsActions, dispatch),
   }
 })
 class EnhancedTable extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      order: 'asc',
-      orderBy: 'position',
-      selected: [],
-      // data: [],
-      // data: [
-      //   createData('Cupcake', 305, 3.7, 67, 4.3),
-      //   createData('Donut', 452, 25.0, 51, 4.9),
-      //   createData('Eclair', 262, 16.0, 24, 6.0),
-      //   createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-      //   createData('Gingerbread', 356, 16.0, 49, 3.9),
-      //   createData('Honeycomb', 408, 3.2, 87, 6.5),
-      //   createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-      //   createData('Jelly Bean', 375, 0.0, 94, 0.0),
-      //   createData('KitKat', 518, 26.0, 65, 7.0),
-      //   createData('Lollipop', 392, 0.2, 98, 0.0),
-      //   createData('Marshmallow', 318, 0, 81, 2.0),
-      //   createData('Nougat', 360, 19.0, 9, 37.0),
-      //   createData('Oreo', 437, 18.0, 63, 4.0),
-      // ].sort((a, b) => (a.calories < b.calories ? -1 : 1)),
-      page: 0,
-      rowsPerPage: 5,
-    };
+  state = {
+    order: 'asc',
+    orderBy: 'position',
+    selected: [],
+    page: 0,
+    rowsPerPage: 10,
+    dialogOpened: false,
+    openedTeam: null,
   }
 
-  componentWillMount(){
-    this.props.actions.fetchSeason(this.props.seasonId)
+  componentWillMount() {
+    this.props.seasonsActions.fetchSeason(this.props.seasonId)
   }
 
   handleRequestSort = (event, property) => {
@@ -265,8 +250,8 @@ class EnhancedTable extends React.Component {
 
     const data =
       order === 'desc'
-        ? this.props.data.sort((a, b) => (this.getDataById(b,orderBy) < this.getDataById(a,orderBy) ? -1 : 1))
-        : this.props.data.sort((a, b) => (this.getDataById(a,orderBy) < this.getDataById(b,orderBy) ? -1 : 1));
+        ? this.props.data.sort((a, b) => (this.getDataById(b, orderBy) < this.getDataById(a, orderBy) ? -1 : 1))
+        : this.props.data.sort((a, b) => (this.getDataById(a, orderBy) < this.getDataById(b, orderBy) ? -1 : 1));
 
     this.setState({ data, order, orderBy });
   };
@@ -279,33 +264,41 @@ class EnhancedTable extends React.Component {
     this.setState({ selected: [] });
   };
 
-  handleKeyDown = (event, id) => {
+  handleKeyDown = (event, obj) => {
     if (keycode(event) === 'space') {
-      this.handleClick(event, id);
+      this.handleClick(event, obj);
     }
   };
 
-  handleClick = (event, id) => {
-    console.log("clicked: ", id)
-    // const { selected } = this.state;
-    // const selectedIndex = selected.indexOf(id);
-    // let newSelected = [];
+  handleClick = (event, obj) => this.props.openTeamDialog(obj.team_id)
+  // {
+  //   this.props.teamsActions.fetchTeam()
+  //   this.props.handleOpenTeamDialog(obj.team_id)
+  //   this.setState({
+  //     dialogOpened: true,
+  //   })
+  //   // const { selected } = this.state;
+  //   // const selectedIndex = selected.indexOf(id);
+  //   // let newSelected = [];
 
-    // if (selectedIndex === -1) {
-    //   newSelected = newSelected.concat(selected, id);
-    // } else if (selectedIndex === 0) {
-    //   newSelected = newSelected.concat(selected.slice(1));
-    // } else if (selectedIndex === selected.length - 1) {
-    //   newSelected = newSelected.concat(selected.slice(0, -1));
-    // } else if (selectedIndex > 0) {
-    //   newSelected = newSelected.concat(
-    //     selected.slice(0, selectedIndex),
-    //     selected.slice(selectedIndex + 1),
-    //   );
-    // }
+  //   // if (selectedIndex === -1) {
+  //   //   newSelected = newSelected.concat(selected, id);
+  //   // } else if (selectedIndex === 0) {
+  //   //   newSelected = newSelected.concat(selected.slice(1));
+  //   // } else if (selectedIndex === selected.length - 1) {
+  //   //   newSelected = newSelected.concat(selected.slice(0, -1));
+  //   // } else if (selectedIndex > 0) {
+  //   //   newSelected = newSelected.concat(
+  //   //     selected.slice(0, selectedIndex),
+  //   //     selected.slice(selectedIndex + 1),
+  //   //   );
+  //   // }
 
-    // this.setState({ selected: newSelected });
-  };
+  //   // this.setState({ selected: newSelected });
+  // };
+
+  handleDialogClose = () => this.setState({ dialogOpened: false })
+
 
   handleChangePage = (event, page) => {
     this.setState({ page });
@@ -318,25 +311,25 @@ class EnhancedTable extends React.Component {
   isSelected = id => this.state.selected.indexOf(id) !== -1;
 
 
-  getDataById = (obj,value) => [obj].concat(value.split('.')).reduce(function(a, b) { return a[b] })
+  getDataById = (obj, value) => [obj].concat(value.split('.')).reduce(function (a, b) { return a[b] })
 
   render() {
 
-    if(this.props.fetchingData || (!this.props.error && !this.props.season))
-    return <div>Loading...</div>
-  
+    if (this.props.fetchingData || (!this.props.error && !this.props.season))
+      return <div>Loading...</div>
+
     var season = this.props.season[this.props.phase];
 
-    if(!season)
+    if (!season)
       return <div>{this.props.error}</div>
 
-    const { data, classes} = this.props;
+    const { data, classes } = this.props;
     const { order, orderBy, selected, rowsPerPage, page } = this.state;
 
     return (
       <Paper className={classes.root}>
-        <EnhancedTableToolbar 
-          numSelected={selected.length} 
+        <EnhancedTableToolbar
+          numSelected={selected.length}
           title={'Team Standings: Season ' + this.props.seasonId + ' - ' + season.name}
         />
         <div className={classes.tableWrapper}>
@@ -350,13 +343,13 @@ class EnhancedTable extends React.Component {
               rowCount={data.length}
             />
             <TableBody>
-              {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map( (n,idx) => {
+              {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((n, idx) => {
                 const isSelected = this.isSelected(n.id);
                 return (
                   <TableRow
                     hover
-                    onClick={event => this.handleClick(event, n.id)}
-                    onKeyDown={event => this.handleKeyDown(event, n.id)}
+                    onClick={event => this.handleClick(event, n)}
+                    onKeyDown={event => this.handleKeyDown(event, n)}
                     role="checkbox"
                     aria-checked={isSelected}
                     tabIndex={-1}
@@ -366,16 +359,17 @@ class EnhancedTable extends React.Component {
                     {/* <TableCell padding="checkbox">
                       <Checkbox checked={isSelected} />
                     </TableCell> */}
-                    {columnData.map((x, idx)=>{
-                      return  <TableCell 
-                                key={idx} 
-                                numeric={x.numeric}
-                              >
-                                {this.getDataById(n,x.id)}
-                              </TableCell>
-                      
+                    {columnData.map((x, idx) => {
+                      return (
+                        <TableCell
+                          key={idx}
+                          numeric={x.numeric}
+                        >
+                          {this.getDataById(n, x.id)}
+                        </TableCell>
+                      )
                     })}
-                    
+
                   </TableRow>
                 );
               })}
