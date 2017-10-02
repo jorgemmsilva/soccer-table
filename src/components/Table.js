@@ -265,8 +265,8 @@ class EnhancedTable extends React.Component {
 
     const data =
       order === 'desc'
-        ? this.props.data.sort((a, b) => (b[orderBy] < a[orderBy] ? -1 : 1))
-        : this.props.data.sort((a, b) => (a[orderBy] < b[orderBy] ? -1 : 1));
+        ? this.props.data.sort((a, b) => (this.getDataById(b,orderBy) < this.getDataById(a,orderBy) ? -1 : 1))
+        : this.props.data.sort((a, b) => (this.getDataById(a,orderBy) < this.getDataById(b,orderBy) ? -1 : 1));
 
     this.setState({ data, order, orderBy });
   };
