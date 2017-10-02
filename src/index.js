@@ -23,32 +23,9 @@ const render = Component => {
 render(Root)
 
 
-
-
-// if (module.hot) {
-//   module.hot.accept('./containers/Root', () => { render(Root) })
-// }
-
-// if (module.hot) {
-//   module.hot.accept(() => {
-//       render(Root)
-//   })
-// }
-
-module.hot.accept('./containers/Root', () => {
-  const NextApp = require('./containers/Root').default
-  render(NextApp)
-})
-
-
-// if (module.hot) {
-//   module.hot.accept('./containers/Root', () => {
-//     const NextApp = require('./containers/Root').default;
-//     ReactDOM.render(
-//       <AppContainer>
-//         <NextApp/>
-//       </AppContainer>,
-//       document.getElementById('root')
-//     );
-//   });
-// }
+if (process.env.NODE_ENV != "production") {
+  module.hot.accept('./containers/Root', () => {
+    const NextApp = require('./containers/Root').default
+    render(NextApp)
+  })
+}

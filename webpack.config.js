@@ -14,7 +14,8 @@ module.exports = {
   },
   output: {
     path: path.resolve(__dirname, './dist'),
-    filename: '[name].js'
+    filename: '[name].js',
+    publicPath: "http://localhost:8080/dist/"
   },
   module: {
     rules: [
@@ -23,5 +24,8 @@ module.exports = {
   },
   plugins: debug ? [
     new webpack.NamedModulesPlugin(),
-  ] : []
+  ] : [
+      new webpack.optimize.UglifyJsPlugin({ mangle: false, sourcemap: false, minimize: true, compress: { warnings: false } }),
+      new webpack.EnvironmentPlugin(['NODE_ENV'])
+    ]
 }

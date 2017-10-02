@@ -271,31 +271,6 @@ class EnhancedTable extends React.Component {
   };
 
   handleClick = (event, obj) => this.props.openTeamDialog(obj.team_id)
-  // {
-  //   this.props.teamsActions.fetchTeam()
-  //   this.props.handleOpenTeamDialog(obj.team_id)
-  //   this.setState({
-  //     dialogOpened: true,
-  //   })
-  //   // const { selected } = this.state;
-  //   // const selectedIndex = selected.indexOf(id);
-  //   // let newSelected = [];
-
-  //   // if (selectedIndex === -1) {
-  //   //   newSelected = newSelected.concat(selected, id);
-  //   // } else if (selectedIndex === 0) {
-  //   //   newSelected = newSelected.concat(selected.slice(1));
-  //   // } else if (selectedIndex === selected.length - 1) {
-  //   //   newSelected = newSelected.concat(selected.slice(0, -1));
-  //   // } else if (selectedIndex > 0) {
-  //   //   newSelected = newSelected.concat(
-  //   //     selected.slice(0, selectedIndex),
-  //   //     selected.slice(selectedIndex + 1),
-  //   //   );
-  //   // }
-
-  //   // this.setState({ selected: newSelected });
-  // };
 
   handleDialogClose = () => this.setState({ dialogOpened: false })
 
@@ -356,9 +331,7 @@ class EnhancedTable extends React.Component {
                     key={idx}
                     selected={isSelected}
                   >
-                    {/* <TableCell padding="checkbox">
-                      <Checkbox checked={isSelected} />
-                    </TableCell> */}
+                  
                     {columnData.map((x, idx) => {
                       return (
                         <TableCell
