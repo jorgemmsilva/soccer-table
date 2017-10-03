@@ -19,7 +19,7 @@ import Checkbox from 'material-ui/Checkbox';
 import IconButton from 'material-ui/IconButton';
 import Tooltip from 'material-ui/Tooltip';
 import DeleteIcon from 'material-ui-icons/Delete';
-import ChangeListSettingsIcon from 'material-ui-icons/Reorder';
+import ChangeListSettingsIcon from 'material-ui-icons/Menu';
 
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
@@ -46,8 +46,8 @@ function createData(name, calories, fat, carbs, protein) {
 
 const columnData = [
   { id: 'position', numeric: true, disablePadding: false, label: 'Position' },
-  { id: 'team_name', numeric: false, disablePadding: false, label: 'Team Name' },
-  { id: 'group_name', numeric: true, disablePadding: false, label: 'Group Name' },
+  { id: 'team_name', numeric: false, disablePadding: false, label: 'Team Name' , width: 5},
+  { id: 'group_name', numeric: false, disablePadding: false, label: 'Group Name' },
   { id: 'overall.games_played', numeric: true, disablePadding: false, label: 'Played' },
   { id: 'overall.won', numeric: true, disablePadding: false, label: 'Won' },
   { id: 'overall.draw', numeric: true, disablePadding: false, label: 'Drawn' },
@@ -89,6 +89,7 @@ class EnhancedTableHead extends React.Component {
       <TableHead>
         <TableRow>
           {columnData.map(column => {
+            if(column.id !== 'group_name' || this.props.drawGroupCol)
             return (
               <TableCell
                 key={column.id}
@@ -157,7 +158,10 @@ let EnhancedTableToolbar = props => {
       <div className={classes.spacer} />
       <div className={classes.actions}>
         <Tooltip title="Change listing">
-          <IconButton aria-label="Change listing">
+          <IconButton
+            aria-label="Change listing"
+            onClick={props.openCompetitionsDialog}
+          >
             <ChangeListSettingsIcon />
           </IconButton>
         </Tooltip>
@@ -277,8 +281,15 @@ class EnhancedTable extends React.Component {
 
   isSelected = id => this.state.selected.indexOf(id) !== -1;
 
-
   getDataById = (obj, value) => [obj].concat(value.split('.')).reduce(function (a, b) { return a[b] })
+
+  checkIfGroupsExist = () =>{
+    for(var i = 0; i < this.props.standings.length; i++){
+      if(this.props.standings[i].group_name)
+        return true
+    }
+    return false
+  }
 
   render() {
 
@@ -294,11 +305,15 @@ class EnhancedTable extends React.Component {
     const { classes, standings, currentLeagueName, seasonName } = this.props;
     const { order, orderBy, selected, rowsPerPage, page } = this.state;
 
+    //check wether current standings have groups
+    let drawGroupCol = this.checkIfGroupsExist()
+
     return (
       <Paper className={classes.root}>
         <EnhancedTableToolbar
           numSelected={selected.length}
           title={'Standings for: ' + currentLeagueName + ' Season: ' + seasonName + ', ' + phase.name}
+          openCompetitionsDialog={this.props.openCompetitionsDialog}
         />
         <div className={classes.tableWrapper}>
           <Table>
@@ -309,15 +324,16 @@ class EnhancedTable extends React.Component {
               onSelectAllClick={this.handleSelectAllClick}
               onRequestSort={this.handleRequestSort}
               rowCount={standings.length}
+              drawGroupCol={drawGroupCol}
             />
             <TableBody>
-              {standings.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((n, idx) => {
-                const isSelected = this.isSelected(n.id);
+              {standings.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((rowObj, idx) => {
+                const isSelected = this.isSelected(rowObj.id);
                 return (
                   <TableRow
                     hover
-                    onClick={event => this.handleClick(event, n)}
-                    onKeyDown={event => this.handleKeyDown(event, n)}
+                    onClick={event => this.handleClick(event, rowObj)}
+                    onKeyDown={event => this.handleKeyDown(event, rowObj)}
                     role="checkbox"
                     aria-checked={isSelected}
                     tabIndex={-1}
@@ -326,12 +342,13 @@ class EnhancedTable extends React.Component {
                   >
 
                     {columnData.map((x, idx) => {
+                      if(x.id !== 'group_name' || drawGroupCol)
                       return (
                         <TableCell
                           key={idx}
                           numeric={x.numeric}
                         >
-                          {this.getDataById(n, x.id)}
+                          {this.getDataById(rowObj, x.id)}
                         </TableCell>
                       )
                     })}
