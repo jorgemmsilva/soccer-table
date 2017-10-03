@@ -30,7 +30,6 @@ import TeamDialog from "./TeamDialog"
 
 
 
-
 //----------------------------------------------------------------------
 //
 //
@@ -48,6 +47,7 @@ function createData(name, calories, fat, carbs, protein) {
 const columnData = [
   { id: 'position', numeric: true, disablePadding: false, label: 'Position' },
   { id: 'team_name', numeric: false, disablePadding: false, label: 'Team Name' },
+  { id: 'group_name', numeric: true, disablePadding: false, label: 'Group Name' },
   { id: 'overall.games_played', numeric: true, disablePadding: false, label: 'Played' },
   { id: 'overall.won', numeric: true, disablePadding: false, label: 'Won' },
   { id: 'overall.draw', numeric: true, disablePadding: false, label: 'Drawn' },
@@ -199,12 +199,12 @@ const styles = theme => ({
 @connect((store) => {
   return {
     currentLeagueName: store.seasons.currentLeagueName,
-    currentSeasonId: store.seasons.currentSeasonId,
-    currentSeasonName: store.seasons.currentSeasonName,
+    seasonId: store.seasons.seasonId,
+    seasonName: store.seasons.seasonName,
     fetchingData: store.seasons.fetching,
-    currentSeason: store.seasons.currentSeason,
+    seasonData: store.seasons.seasonData,
     phaseIdx: store.seasons.currentPhase,
-    data: store.seasons.data,
+    standings: store.seasons.standings,
     error: store.seasons.error,
   }
 }, (dispatch) => {
@@ -228,8 +228,8 @@ class EnhancedTable extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.currentSeasonId != this.props.currentSeasonId)
-      this.props.actions.fetchSeason(nextProps.currentSeasonId)
+    if (nextProps.seasonId != this.props.seasonId)
+      this.props.actions.fetchSeason(nextProps.seasonId)
   }
 
   handleRequestSort = (event, property) => {
@@ -240,12 +240,12 @@ class EnhancedTable extends React.Component {
       order = 'asc';
     }
 
-    const data =
+    const standings =
       order === 'desc'
-        ? this.props.data.sort((a, b) => (this.getDataById(b, orderBy) < this.getDataById(a, orderBy) ? -1 : 1))
-        : this.props.data.sort((a, b) => (this.getDataById(a, orderBy) < this.getDataById(b, orderBy) ? -1 : 1));
+        ? this.props.standings.sort((a, b) => (this.getDataById(b, orderBy) < this.getDataById(a, orderBy) ? -1 : 1))
+        : this.props.standings.sort((a, b) => (this.getDataById(a, orderBy) < this.getDataById(b, orderBy) ? -1 : 1));
 
-    this.setState({ data, order, orderBy });
+    this.setState({ standings, order, orderBy });
   };
 
   handleSelectAllClick = (event, checked) => {
@@ -282,23 +282,23 @@ class EnhancedTable extends React.Component {
 
   render() {
 
-    if (this.props.fetchingData && (!this.props.error && !this.props.data))
+    if (this.props.fetchingData && (!this.props.error && !this.props.standings))
       return <div>Loading...</div>
 
-    if (this.props.error || !this.props.data)
+    if (this.props.error || !this.props.standings)
       return <div>Error! Something went Wrong. {this.props.error}</div>
 
 
-    var phase = this.props.currentSeason[this.props.phaseIdx];
+    var phase = this.props.seasonData[this.props.phaseIdx];
 
-    const { data, classes, currentLeagueName, currentSeasonName } = this.props;
+    const { classes, standings, currentLeagueName, seasonName } = this.props;
     const { order, orderBy, selected, rowsPerPage, page } = this.state;
 
     return (
       <Paper className={classes.root}>
         <EnhancedTableToolbar
           numSelected={selected.length}
-          title={'Standings for: ' + currentLeagueName + ' Season: ' + currentSeasonName + ', ' + phase.name}
+          title={'Standings for: ' + currentLeagueName + ' Season: ' + seasonName + ', ' + phase.name}
         />
         <div className={classes.tableWrapper}>
           <Table>
@@ -308,10 +308,10 @@ class EnhancedTable extends React.Component {
               orderBy={orderBy}
               onSelectAllClick={this.handleSelectAllClick}
               onRequestSort={this.handleRequestSort}
-              rowCount={data.length}
+              rowCount={standings.length}
             />
             <TableBody>
-              {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((n, idx) => {
+              {standings.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((n, idx) => {
                 const isSelected = this.isSelected(n.id);
                 return (
                   <TableRow
@@ -342,7 +342,7 @@ class EnhancedTable extends React.Component {
             </TableBody>
             <TableFooter>
               <TablePagination
-                count={data.length}
+                count={standings.length}
                 rowsPerPage={rowsPerPage}
                 page={page}
                 onChangePage={this.handleChangePage}

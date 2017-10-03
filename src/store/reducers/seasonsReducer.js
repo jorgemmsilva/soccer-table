@@ -2,14 +2,14 @@ export default function reducer(
   state = {
     currentLeagueId: 501,
     currentLeagueName: "Premiership",
-    seasonsList: [],
-    currentSeasonId: null,
-    currentSeasonName: null,
-    currentSeason: null,
+    leagueSeasonsList: [],
+    seasonId: null,
+    seasonName: null,
+    seasonData: null,
     currentPhase : 0,
+    standings: null,
     fetching: false,
     error: null,
-    data: null,
   }
   , action){
 
@@ -21,12 +21,13 @@ export default function reducer(
 
     case 'FETCH_SEASON_FULFILLED':{
       var seasonData = action.payload.data.data
-      var data = seasonData[state.currentPhase].standings.data.sort((a, b) => (a.position < b.position ? -1 : 1))
+      var data = seasonData[0].standings.data.sort((a, b) => (a.position < b.position ? -1 : 1))
       return{
         ...state, 
         fetching: false, 
-        currentSeason: seasonData,
-        data: data,
+        currentPhase: 0,
+        seasonData: seasonData,
+        standings: data,
       }
     }
 
@@ -42,7 +43,7 @@ export default function reducer(
       return{
         ...state,
         currentPhase: action.payload.phase,
-        data: state.season[action.payload.phase].standings.data.sort((a, b) => (a.position < b.position ? -1 : 1))
+        standings: state.season[action.payload.phase].standings.data.sort((a, b) => (a.position < b.position ? -1 : 1))
       }
     }
 
@@ -52,14 +53,14 @@ export default function reducer(
 
     case 'FETCH_SEASON_LIST_FULFILLED':{
       let payloadData = action.payload.data.data
-      let currentSeasonData = payloadData.find((x)=> x.league_id === state.currentLeagueId && x.is_current_season )
+      let seasonData = payloadData.find((x)=> x.league_id === state.currentLeagueId && x.is_current_season )
 
       return{
         ...state, 
         fetching: false, 
-        seasonsList: payloadData,
-        currentSeasonId: currentSeasonData.id,
-        currentSeasonName: currentSeasonData.name,
+        leagueSeasonsList: payloadData,
+        seasonId: seasonData.id,
+        seasonName: seasonData.name,
       }
     }
 
