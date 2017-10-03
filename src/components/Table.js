@@ -29,7 +29,6 @@ import * as seasonsActions from "../store/actions/seasonsActions"
 import TeamDialog from "./TeamDialog"
 
 
-
 //----------------------------------------------------------------------
 //
 //
@@ -284,6 +283,7 @@ class EnhancedTable extends React.Component {
   getDataById = (obj, value) => [obj].concat(value.split('.')).reduce(function (a, b) { return a[b] })
 
   checkIfGroupsExist = () =>{
+    
     for(var i = 0; i < this.props.standings.length; i++){
       if(this.props.standings[i].group_name)
         return true
@@ -296,23 +296,23 @@ class EnhancedTable extends React.Component {
     if (this.props.fetchingData && (!this.props.error && !this.props.standings))
       return <div>Loading...</div>
 
-    if (this.props.error || !this.props.standings)
+    if (this.props.error)
       return <div>Error! Something went Wrong. {this.props.error}</div>
-
-
-    var phase = this.props.seasonData[this.props.phaseIdx];
-
-    const { classes, standings, currentLeagueName, seasonName } = this.props;
+    
+    const { classes, standings, currentLeagueName, seasonName, seasonData } = this.props;
     const { order, orderBy, selected, rowsPerPage, page } = this.state;
 
-    //check wether current standings have groups
+    if(seasonData)
+    var phase = seasonData[this.props.phaseIdx];
+
+    //check whether current standings have groups
     let drawGroupCol = this.checkIfGroupsExist()
 
     return (
       <Paper className={classes.root}>
         <EnhancedTableToolbar
           numSelected={selected.length}
-          title={'Standings for: ' + currentLeagueName + ' Season: ' + seasonName + ', ' + phase.name}
+          title={'Standings for: ' + currentLeagueName + ' Season: ' + seasonName + ', ' + (phase ? phase.name : '')}
           openCompetitionsDialog={this.props.openCompetitionsDialog}
         />
         <div className={classes.tableWrapper}>
