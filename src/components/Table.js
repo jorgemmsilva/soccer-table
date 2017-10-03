@@ -19,7 +19,7 @@ import Checkbox from 'material-ui/Checkbox';
 import IconButton from 'material-ui/IconButton';
 import Tooltip from 'material-ui/Tooltip';
 import DeleteIcon from 'material-ui-icons/Delete';
-import FilterListIcon from 'material-ui-icons/FilterList';
+import ChangeListSettingsIcon from 'material-ui-icons/Reorder';
 
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
@@ -88,13 +88,6 @@ class EnhancedTableHead extends React.Component {
     return (
       <TableHead>
         <TableRow>
-          {/* <TableCell padding="checkbox">
-            <Checkbox
-              indeterminate={numSelected > 0 && numSelected < rowCount}
-              checked={numSelected === rowCount}
-              onChange={onSelectAllClick}
-            />
-          </TableCell> */}
           {columnData.map(column => {
             return (
               <TableCell
@@ -163,19 +156,11 @@ let EnhancedTableToolbar = props => {
       </div>
       <div className={classes.spacer} />
       <div className={classes.actions}>
-        {numSelected > 0 ? (
-          <Tooltip title="Delete">
-            <IconButton aria-label="Delete">
-              <DeleteIcon />
-            </IconButton>
-          </Tooltip>
-        ) : (
-            <Tooltip title="Filter list">
-              <IconButton aria-label="Filter list">
-                <FilterListIcon />
-              </IconButton>
-            </Tooltip>
-          )}
+        <Tooltip title="Change listing">
+          <IconButton aria-label="Change listing">
+            <ChangeListSettingsIcon />
+          </IconButton>
+        </Tooltip>
       </div>
     </Toolbar>
   );
@@ -213,16 +198,18 @@ const styles = theme => ({
 
 @connect((store) => {
   return {
-    seasonId: store.seasons.seasonId,
+    currentLeagueName: store.seasons.currentLeagueName,
+    currentSeasonId: store.seasons.currentSeasonId,
+    currentSeasonName: store.seasons.currentSeasonName,
     fetchingData: store.seasons.fetching,
-    season: store.seasons.season,
-    phase: store.seasons.phase,
+    currentSeason: store.seasons.currentSeason,
+    phaseIdx: store.seasons.currentPhase,
     data: store.seasons.data,
     error: store.seasons.error,
   }
 }, (dispatch) => {
   return {
-    seasonsActions: bindActionCreators(seasonsActions, dispatch),
+    actions: bindActionCreators(seasonsActions, dispatch),
   }
 })
 class EnhancedTable extends React.Component {
@@ -237,7 +224,12 @@ class EnhancedTable extends React.Component {
   }
 
   componentWillMount() {
-    this.props.seasonsActions.fetchSeason(this.props.seasonId)
+    this.props.actions.fetchSeasonList()
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.currentSeasonId != this.props.currentSeasonId)
+      this.props.actions.fetchSeason(nextProps.currentSeasonId)
   }
 
   handleRequestSort = (event, property) => {
@@ -290,22 +282,23 @@ class EnhancedTable extends React.Component {
 
   render() {
 
-    if (this.props.fetchingData || (!this.props.error && !this.props.season))
+    if (this.props.fetchingData && (!this.props.error && !this.props.data))
       return <div>Loading...</div>
 
-    var season = this.props.season[this.props.phase];
+    if (this.props.error || !this.props.data)
+      return <div>Error! Something went Wrong. {this.props.error}</div>
 
-    if (!season)
-      return <div>{this.props.error}</div>
 
-    const { data, classes } = this.props;
+    var phase = this.props.currentSeason[this.props.phaseIdx];
+
+    const { data, classes, currentLeagueName, currentSeasonName } = this.props;
     const { order, orderBy, selected, rowsPerPage, page } = this.state;
 
     return (
       <Paper className={classes.root}>
         <EnhancedTableToolbar
           numSelected={selected.length}
-          title={'Team Standings: Season ' + this.props.seasonId + ' - ' + season.name}
+          title={'Standings for: ' + currentLeagueName + ' Season: ' + currentSeasonName + ', ' + phase.name}
         />
         <div className={classes.tableWrapper}>
           <Table>
@@ -331,7 +324,7 @@ class EnhancedTable extends React.Component {
                     key={idx}
                     selected={isSelected}
                   >
-                  
+
                     {columnData.map((x, idx) => {
                       return (
                         <TableCell

@@ -7,3 +7,9 @@ export function fetchSeason(season) {
   }
 }
 
+export function fetchSeasonList() {
+  return {
+    type: "FETCH_SEASON_LIST",
+    payload: axios.get("https://soccer.sportmonks.com/api/v2.0/seasons?api_token=" + process.env.API_KEY)
+  }
+}

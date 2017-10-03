@@ -41,14 +41,14 @@ const styles = {
   }
 }, (dispatch) => {
   return {
-    teamsActions: bindActionCreators(teamsActions, dispatch),
+    actions: bindActionCreators(teamsActions, dispatch),
   }
 })
-export default class TeamDialog extends React.Component {
+export default class CompetitionsDialog extends React.Component {
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.currentTeam && nextProps.currentTeam != this.props.currentTeam)
-      this.props.teamsActions.fetchTeam(nextProps.currentTeam)
+    if (nextProps.openedTeam && nextProps.openedTeam != this.props.openedTeam)
+      this.props.actions.fetchTeam(nextProps.openedTeam)
   }
 
   render() {
