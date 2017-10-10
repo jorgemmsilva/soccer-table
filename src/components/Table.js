@@ -312,7 +312,7 @@ class EnhancedTable extends React.Component {
       <Paper className={classes.root}>
         <EnhancedTableToolbar
           numSelected={selected.length}
-          title={'Standings for: ' + currentLeagueName + ' Season: ' + seasonName + ', ' + (phase ? phase.name : '')}
+          title={<span id="table_title">Standings for: {currentLeagueName} Season: {seasonName}, {phase ? phase.name : ''}</span>}
           openCompetitionsDialog={this.props.openCompetitionsDialog}
         />
         <div className={classes.tableWrapper}>

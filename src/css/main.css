@@ -1,0 +1,9 @@
+#table_title {
+  font-size: 3vw;
+}
+
+@media screen and (min-width: 700px) {
+  #table_title {
+     font-size: 21px;
+  }
+}

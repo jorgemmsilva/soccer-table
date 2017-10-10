@@ -8,6 +8,8 @@ import store from './store/store'
 
 import Root from './containers/Root'
 
+import './css/main.css'
+
 const render = Component => {
 
   ReactDOM.render(

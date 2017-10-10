@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "webpack-dev-server --hot --history-api-fallback --open",
-    "build": "NODE_ENV=production webpack --config ./webpack.config.js --progress --colors --env production"    
+    "build": "NODE_ENV=production webpack --config ./webpack.config.js --progress --colors --env production"
   },
   "dependencies": {
     "axios": "^0.16.2",
@@ -27,8 +27,10 @@
     "babel-preset-env": "^1.6.0",
     "babel-preset-react": "^6.23.0",
     "babel-preset-stage-0": "^6.24.1",
+    "css-loader": "^0.28.7",
     "react-hot-loader": "^3.0.0-beta.6",
     "redux-logger": "^3.0.6",
+    "style-loader": "^0.19.0",
     "webpack": "^2.2.1",
     "webpack-dev-server": "^2.4.1"
   }
